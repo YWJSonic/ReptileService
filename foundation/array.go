@@ -19,8 +19,66 @@ func DeleteArrayElement(elementIndex interface{}, array []interface{}) []interfa
 	return array
 }
 
-// MapToArray return map keys and values
-func MapToArray(mapData map[int64]int64) (keys, values []int64) {
+// MapIIKeys ...
+func MapIIKeys(mapData map[int64]int64) (Keys []int64) {
+	for key := range mapData {
+		Keys = append(Keys, key)
+	}
+	return
+}
+
+// MapSSKeys ...
+func MapSSKeys(mapData map[string]string) (Keys []string) {
+	for key := range mapData {
+		Keys = append(Keys, key)
+	}
+	return
+}
+
+// MapSIKeys ...
+func MapSIKeys(mapData map[string]int64) (Keys []string) {
+	for key := range mapData {
+		Keys = append(Keys, key)
+	}
+	return
+}
+
+// MapSIAAKeys ...
+func MapSIAAKeys(mapData map[string][][]int64) (Keys []string) {
+	for key := range mapData {
+		Keys = append(Keys, key)
+	}
+	return
+}
+
+// MapISAKeys ...
+func MapISAKeys(mapData map[int64][]string) (Keys []int64) {
+	for key := range mapData {
+		Keys = append(Keys, key)
+	}
+	return
+}
+
+// MapIIToArray return map keys and values
+func MapIIToArray(mapData map[int64]int64) (keys, values []int64) {
+	for key, value := range mapData {
+		keys = append(keys, key)
+		values = append(values, value)
+	}
+	return
+}
+
+// MapSSToArray return map keys and values
+func MapSSToArray(mapData map[string]string) (keys, values []string) {
+	for key, value := range mapData {
+		keys = append(keys, key)
+		values = append(values, value)
+	}
+	return
+}
+
+// MapSIToArray return map keys and values
+func MapSIToArray(mapData map[string]int64) (keys []string, values []int64) {
 	for key, value := range mapData {
 		keys = append(keys, key)
 		values = append(values, value)

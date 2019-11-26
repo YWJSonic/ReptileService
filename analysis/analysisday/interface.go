@@ -6,4 +6,5 @@ type GetPriceDeatil interface {
 	Count() int64
 	Time() string
 	Date() string
+	OpenPrice() string
 }

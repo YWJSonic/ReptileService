@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/YWJSonic/ReptileService/MISTWSEcom/stock"
 	"github.com/YWJSonic/processdb"
 )
 
@@ -43,9 +42,18 @@ func connectstockBDSQL(setting *struct{ DBUser, DBPassword, DBIP, DBPORT, DBName
 	return stockBDSQL.DB, nil
 }
 
+// GetTransactiondetail ...
+func GetTransactiondetail(StockCode string, date string) ([]map[string]interface{}, error) {
+	result, err := processdb.CallReadOutMap(stockBDSQL.DB, "GetTransactiondetail", StockCode, date)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // SetTransactiondetail ...
-func SetTransactiondetail(data stock.MsgInfo) error {
-	_, err := processdb.CallWrite(stockBDSQL.DB, processdb.MakeProcedureQueryStr("SetTransactiondetail", 37), data.C, data.D, data.T, data.TS, data.TK0, data.TK1, data.TLong, data.CH, data.N, data.NF, data.Y, data.Z, data.IP, data.TV, data.A, data.F, data.B, data.G, data.EX, data.IT, data.MT, data.O, data.OA, data.OB, data.OT, data.OV, data.OZ, data.I, data.L, data.H, data.V, data.W, data.U, data.S, data.P, data.PS, data.PZ)
+func SetTransactiondetail(C, D, T, TS, TK0, TK1, TLong, CH, N, NF, Y, Z, IP, TV, A, F, B, G, EX, IT, MT, O, OA, OB, OT, OV, OZ, I, L, H, V, W, U, S, P, PS, PZ string) error {
+	_, err := processdb.CallWrite(stockBDSQL.DB, processdb.MakeProcedureQueryStr("SetTransactiondetail", 37), C, D, T, TS, TK0, TK1, TLong, CH, N, NF, Y, Z, IP, TV, A, F, B, G, EX, IT, MT, O, OA, OB, OT, OV, OZ, I, L, H, V, W, U, S, P, PS, PZ)
 	if err != nil {
 		fmt.Println(err)
 		return err

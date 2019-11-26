@@ -59,7 +59,11 @@ func InterfaceToBool(v interface{}) bool {
 
 // InterfaceToString ...
 func InterfaceToString(v interface{}) string {
-	return v.(string)
+	if v == nil {
+		return ""
+	} else {
+		return v.(string)
+	}
 }
 
 // MD5Code encode MD5

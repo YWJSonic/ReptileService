@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	foundation "github.com/YWJSonic/ReptileService/foundation"
+	"github.com/YWJSonic/ReptileService/foundation"
 )
 
 // URL https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_2409.tw&json=1&delay=0&_=1573451359721
@@ -108,6 +108,11 @@ func (M *MsgInfo) Time() string {
 // Date ...
 func (M *MsgInfo) Date() string {
 	return M.D
+}
+
+// OpenPrice ...
+func (M *MsgInfo) OpenPrice() string {
+	return M.O
 }
 
 //////////////////////////

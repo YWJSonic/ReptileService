@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"os"
+	"os/exec"
 	"time"
 
-	mistwsecom "github.com/YWJSonic/ReptileService/MISTWSEcom"
+	"github.com/YWJSonic/ReptileService/analysis"
 	"github.com/YWJSonic/ReptileService/handledb"
-	"github.com/YWJSonic/ReptileService/routineswitch"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,7 +21,11 @@ import (
 // URL https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date=20191107&type=MS&_=1573441130592
 
 // URL　https://mis.twse.com.tw/stock/api/getStockNames.jsp?n=2409&_=1573452768792
+
+// URL https://www.twse.com.tw/exchangeReport/BWIBBU?response=json&date=20190101&stockNo=2409&_=1574393051372
 func main() {
+	stockCode := os.Args[1]
+
 	setting := struct{ DBUser, DBPassword, DBIP, DBPORT, DBName string }{
 		DBUser:     "sony79410",
 		DBPassword: "Sonic79410",
@@ -39,21 +43,24 @@ func main() {
 	// 	twsecom.Collection(stockcode)
 	// }
 
-	routingswitch := &routineswitch.Info{}
-	go func() {
-		mistwsecom.Collection("2409", routingswitch)
-	}()
+	// routingswitch := &routineswitch.Info{}
+	// mistwsecom.Collection(stockCode, routingswitch)
 
-	// analysis.GetAnalysisManager().CollectionPriceDetail("2409")
-	// for index := 50; index > 0; index-- {
+	analysis.GetAnalysisManager().CollectionPriceDetail(stockCode)
+	for {
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+		analysis.GetAnalysisManager().ShowPriceDetail(stockCode)
+		time.Sleep(time.Second * 5)
+	}
 
-	// 	cmd := exec.Command("cmd", "/c", "cls")
-	// 	cmd.Stdout = os.Stdout
-	// 	cmd.Run()
-	// 	analysis.GetAnalysisManager().ShowPriceDetail("2409")
-	// 	time.Sleep(time.Second * 5)
-	// }
 	// analysis.GetAnalysisManager().StopCollectionPriceDetail("2409")
-	fmt.Println("---------------------------------------------")
-	time.Sleep(time.Hour)
+
+	// value1, _ := strconv.ParseFloat(os.Args[1], 64)
+	// value2, _ := strconv.ParseFloat(os.Args[2], 64)
+
+	// fmt.Println(analysis.ProfitMath(value1, value2))
+	// fmt.Println("---------------------------------------------")
+	// time.Sleep(time.Hour)
 }
