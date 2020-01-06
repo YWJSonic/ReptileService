@@ -1,6 +1,7 @@
 package fmsrfk
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -10,18 +11,23 @@ import (
 )
 
 // CopyData ...
-func CopyData(Num string, Date string) {
+func CopyData(Num string, Date string) error {
 	result, err := Get(Num, Date)
 	if err != nil {
-		panic((err))
+		return err
 	}
 	Infos := result.GetInfos()
 	for _, info := range Infos {
 		err = handledb.Setstockmonth(info.StockCode, info.Year, info.Month, info.StockPrice, info.StockCount, info.DealCount, info.WeightsAvgPrice, info.TopPrice, info.BottomPrice, info.Turnover)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
+	err = handledb.Setcollectionflag(Num, "Month", Date[0:len(Date)-2])
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Get data
@@ -36,6 +42,9 @@ func Get(Num string, Date string) (*Result, error) {
 	}
 	data.StockCode = Num
 	data.Original = string(result)
+	if data.Stat != "OK" {
+		return nil, errors.New(data.Stat)
+	}
 	return data, nil
 }
 
@@ -53,4 +62,9 @@ func ConvertToInfo(Data []interface{}) Info {
 	info.StockCount = foundation.InterfaceToString(Data[7])
 	info.Turnover = foundation.InterfaceToString(Data[8])
 	return info
+}
+
+// GetAlreadyDate ...
+func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
+	return handledb.Getcollectionflag(StockCode, "Month")
 }

@@ -1,11 +1,7 @@
 package main
 
 import (
-	"os"
-	"os/exec"
-	"time"
-
-	"github.com/YWJSonic/ReptileService/analysis"
+	twsecom "github.com/YWJSonic/ReptileService/TWSEcom"
 	"github.com/YWJSonic/ReptileService/handledb"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -24,7 +20,7 @@ import (
 
 // URL https://www.twse.com.tw/exchangeReport/BWIBBU?response=json&date=20190101&stockNo=2409&_=1574393051372
 func main() {
-	stockCode := os.Args[1]
+	// stockCode := os.Args[1]
 
 	setting := struct{ DBUser, DBPassword, DBIP, DBPORT, DBName string }{
 		DBUser:     "sony79410",
@@ -40,20 +36,17 @@ func main() {
 
 	// stockcodes := []string{"2377", "2882", "2888", "3481", "4904", "8046", "2317", "3481", "2376", "2449"}
 	// for _, stockcode := range stockcodes {
-	// 	twsecom.Collection(stockcode)
+	twsecom.Collection("2409") //stockCode)
 	// }
 
-	// routingswitch := &routineswitch.Info{}
-	// mistwsecom.Collection(stockCode, routingswitch)
-
-	analysis.GetAnalysisManager().CollectionPriceDetail(stockCode)
-	for {
-		cmd := exec.Command("cmd", "/c", "cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-		analysis.GetAnalysisManager().ShowPriceDetail(stockCode)
-		time.Sleep(time.Second * 5)
-	}
+	// analysis.GetAnalysisManager().CollectionPriceDetail(stockCode)
+	// for {
+	// 	cmd := exec.Command("cmd", "/c", "cls")
+	// 	cmd.Stdout = os.Stdout
+	// 	cmd.Run()
+	// 	analysis.GetAnalysisManager().ShowPriceDetail(stockCode)
+	// 	time.Sleep(time.Second * 5)
+	// }
 
 	// analysis.GetAnalysisManager().StopCollectionPriceDetail("2409")
 
@@ -61,6 +54,6 @@ func main() {
 	// value2, _ := strconv.ParseFloat(os.Args[2], 64)
 
 	// fmt.Println(analysis.ProfitMath(value1, value2))
-	// fmt.Println("---------------------------------------------")
+	// fmt.Println("------------------All Finish---------------------------")
 	// time.Sleep(time.Hour)
 }

@@ -11,8 +11,13 @@ import (
 
 // Info pricedetail info
 type Info struct {
+	StockCode      string
+	StockName      string
+	PriceDiff      string
+	IsPriceUp      bool
 	isSamePrice    bool
 	openPrice      string
+	yesterdayPrice string
 	newPrice       string
 	newCount       int64
 	samePriceCount int64
@@ -27,17 +32,26 @@ type Info struct {
 // PrintPriceDeatil ...
 func (I *Info) PrintPriceDeatil() {
 	var Keys []string
-
+	var PriceDiff string
 	Keys = foundation.MapSIKeys(I.PriceDeatil)
 	sort.Sort(sort.Reverse(sort.StringSlice(Keys)))
 	// sort.Strings(sort.Reverse())
 
+	if I.IsPriceUp {
+		PriceDiff = fmt.Sprintf("\033[1;31m%s %s\033[0m", "⋀", I.PriceDiff)
+	} else {
+		PriceDiff = fmt.Sprintf("\033[1;32m%s %s\033[0m", "⋁", I.PriceDiff)
+	}
+
+	fmt.Printf("------ %s      %s         %s    ---\n", I.StockCode, I.StockName, PriceDiff)
 	fmt.Printf("------ 價格    累積數量    現購數量    累積數量 ---\n")
 	for index, key := range Keys {
 		if key == I.newPrice {
 			fmt.Printf("現     %s    %d        %d        %d\n", key, I.PriceDeatil[key], I.newCount, I.samePriceCount)
 		} else if key == I.openPrice {
 			fmt.Printf("開     %s    %d\n", key, I.PriceDeatil[key])
+		} else if key == I.yesterdayPrice {
+			fmt.Printf("昨     %s    %d\n", key, I.PriceDeatil[key])
 		} else if index == 0 {
 			fmt.Printf("高     %s    %d\n", key, I.PriceDeatil[key])
 		} else if len(Keys) == (index + 1) {
@@ -73,6 +87,13 @@ func (I *Info) PrintPriceDeatil() {
 
 // SetPriceDeatil ...
 func (I *Info) SetPriceDeatil(info GetPriceDeatil) {
+	if I.StockCode == "" {
+		I.StockCode = info.StockCode()
+	}
+	if I.StockName == "" {
+		I.StockName = info.StockNmae()
+	}
+
 	if info.Price() == "" || info.Count() == 0 {
 		return
 	}
@@ -80,8 +101,11 @@ func (I *Info) SetPriceDeatil(info GetPriceDeatil) {
 	if !foundation.IsIncludeStr(info.Time(), I.PriceDetailLog) {
 		I.isSamePrice = I.newPrice == info.Price()
 		I.openPrice = info.OpenPrice()
+		I.yesterdayPrice = info.YesterdayPrice()
 		I.newPrice = info.Price()
 		I.newCount = info.Count()
+		I.PriceDiff, _ = info.GetDiffStr()
+		I.IsPriceUp = info.IsPriceUp()
 
 		if I.isSamePrice {
 			I.samePriceCount += info.Count()

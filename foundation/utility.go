@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"time"
 )
 
@@ -133,4 +134,69 @@ func RangeRandom(rangeInt []int) int {
 // ConevrToTimeInt64 Get time point
 func ConevrToTimeInt64(year int, month time.Month, day, hour, min, sec, nsec int) int64 {
 	return time.Date(year, month, day, hour, min, sec, nsec, time.Local).Unix()
+}
+
+// StringColor red and green
+func StringColor(Str, Color string) string {
+	if "red" == Color || "Red" == Color {
+		return fmt.Sprintf("\033[1;31m%s\033[0m", Str)
+	} else if "green" == Color || "Green" == Color {
+		return fmt.Sprintf("\033[1;32m%s\033[0m", Str)
+	}
+	return Str
+}
+
+// IStringArrayColor red and green
+func IStringArrayColor(IValues interface{}, Color string) []interface{} {
+	var result []interface{}
+
+	Values := reflect.ValueOf(IValues)
+	switch Values.Kind() {
+	case reflect.Slice:
+		if "red" == Color || "Red" == Color {
+			for i := 0; i < Values.Len(); i++ {
+				result = append(result, fmt.Sprintf("\033[1;31m%s\033[0m", Values.Index(i)))
+			}
+		} else if "green" == Color || "Green" == Color {
+			for i := 0; i < Values.Len(); i++ {
+				result = append(result, fmt.Sprintf("\033[1;32m%s\033[0m", Values.Index(i)))
+			}
+		} else {
+			for i := 0; i < Values.Len(); i++ {
+				result = append(result, fmt.Sprint(Values.Index(i)))
+			}
+		}
+	}
+
+	return result
+}
+
+// Float32ArrayColor red and green
+func Float32ArrayColor(Color string, Values ...float32) []interface{} {
+	var result []interface{}
+	if "red" == Color || "Red" == Color {
+		for _, value := range Values {
+			result = append(result, fmt.Sprintf("\033[1;31m%f\033[0m", value))
+		}
+	} else if "green" == Color || "Green" == Color {
+		for _, value := range Values {
+			result = append(result, fmt.Sprintf("\033[1;32m%f\033[0m", value))
+		}
+	} else {
+		for _, value := range Values {
+			result = append(result, fmt.Sprint(value))
+		}
+	}
+
+	return result
+}
+
+// IsAfterNowTime ...
+func IsAfterNowTime(Year, Month, Day int) bool {
+	return time.Date(Year, time.Month(Month), Day, 0, 0, 0, 0, time.UTC).After(time.Now())
+}
+
+// IsBeforeNowTime ...
+func IsBeforeNowTime(Year, Month, Day int) bool {
+	return time.Date(Year, time.Month(Month), Day, 0, 0, 0, 0, time.UTC).Before(time.Now())
 }

@@ -12,18 +12,24 @@ import (
 // URL https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=2409&_=1573430069096
 
 // CopyData ...
-func CopyData(Num string) {
+func CopyData(Num string) error {
 	result, err := Get(Num)
 	if err != nil {
-		panic((err))
+		return err
 	}
 	Infos := result.GetInfos()
 	for _, info := range Infos {
 		err = handledb.Setstockyear(info.StockCode, info.Year, info.StockCount, info.StockPrice, info.DealCount, info.TopPrice, info.TopPriceDate, info.BottomPrice, info.BottomPriceDate, info.AVGPrice)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
+
+	err = handledb.Setcollectionflag(Num, "Year", fmt.Sprint(time.Now().Year()))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Get data
@@ -53,4 +59,9 @@ func ConvertToInfo(Data []interface{}) Info {
 	info.BottomPriceDate = foundation.InterfaceToString(Data[7])
 	info.AVGPrice = foundation.InterfaceToString(Data[8])
 	return info
+}
+
+// GetAlreadyDate ...
+func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
+	return handledb.Getcollectionflag(StockCode, "Year")
 }

@@ -61,6 +61,15 @@ func SetTransactiondetail(C, D, T, TS, TK0, TK1, TLong, CH, N, NF, Y, Z, IP, TV,
 	return nil
 }
 
+// GetstockAlreadyDay ...
+func GetstockAlreadyDay(StockCode string) ([]map[string]interface{}, error) {
+	result, err := processdb.CallReadOutMap(stockBDSQL.DB, "GetstockAlreadyDay", StockCode)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // Setstockyear ...
 func Setstockyear(data ...interface{}) error {
 	Result, err := processdb.CallWrite(stockBDSQL.DB, processdb.MakeProcedureQueryStr("Setstockyear", len(data)), data...)
@@ -84,6 +93,25 @@ func Setstockmonth(data ...interface{}) error {
 // Setstockday ...
 func Setstockday(data ...interface{}) error {
 	Result, err := processdb.CallWrite(stockBDSQL.DB, processdb.MakeProcedureQueryStr("Setstockday", len(data)), data...)
+	if err != nil {
+		fmt.Println(Result)
+		return err
+	}
+	return nil
+}
+
+// Getcollectionflag ...
+func Getcollectionflag(StockCode, Flag string) ([]map[string]interface{}, error) {
+	result, err := processdb.CallReadOutMap(stockBDSQL.DB, "Getcollectionflag", StockCode, Flag)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// Setcollectionflag ...
+func Setcollectionflag(StockCode, Flag, Date string) error {
+	Result, err := processdb.CallWrite(stockBDSQL.DB, processdb.MakeProcedureQueryStr("Setcollectionflag", 3), StockCode, Flag, Date)
 	if err != nil {
 		fmt.Println(Result)
 		return err

@@ -1,5 +1,16 @@
 package foundation
 
+import "reflect"
+
+// ReverseAny ...
+func ReverseAny(s interface{}) {
+	n := reflect.ValueOf(s).Len()
+	swap := reflect.Swapper(s)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
+}
+
 // ReverseArray Reverse string array
 func ReverseArray(data []string) []string {
 	for i, j := 0, len(data)-1; i < j; i, j = i+1, j-1 {

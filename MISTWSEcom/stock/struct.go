@@ -85,6 +85,16 @@ type MsgInfo struct {
 
 // 每日資料分析介面
 
+// StockCode ...
+func (M *MsgInfo) StockCode() string {
+	return M.C
+}
+
+// StockNmae ...
+func (M *MsgInfo) StockNmae() string {
+	return M.N
+}
+
 // Price ...
 func (M *MsgInfo) Price() string {
 	return M.Z
@@ -113,6 +123,11 @@ func (M *MsgInfo) Date() string {
 // OpenPrice ...
 func (M *MsgInfo) OpenPrice() string {
 	return M.O
+}
+
+// YesterdayPrice ...
+func (M *MsgInfo) YesterdayPrice() string {
+	return M.Y
 }
 
 //////////////////////////
@@ -306,12 +321,14 @@ func (M *MsgInfo) GetBuyCountTop5() ([]float64, error) {
 	return result, nil
 }
 
-// IsMoneyUp 本日漲跌
-func (M *MsgInfo) IsMoneyUp() bool {
-	if M.IP == "0" {
+// IsPriceUp 本日漲跌
+func (M *MsgInfo) IsPriceUp() bool {
+
+	if value, err := M.GetDiff(); err != nil {
 		return false
-	} else if M.IP == "1" {
+	} else if value > 0 {
 		return true
 	}
+
 	return false
 }
