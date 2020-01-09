@@ -1,5 +1,6 @@
 package prediction
 
+// InputData ...
 type InputData struct {
 	DayOp  float32
 	DayCL  float32

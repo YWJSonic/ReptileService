@@ -1,11 +1,5 @@
 package prediction
 
-import (
-	"fmt"
-
-	"github.com/YWJSonic/ReptileService/foundation"
-)
-
 // Analysis ...
 func Analysis(Data InputData) {
 
@@ -49,14 +43,14 @@ func Analysis(Data InputData) {
 	AvgMGroup = append(AvgMGroup, MathAvg(MGroup[9]))
 	AvgMGroup = append(AvgMGroup, MathAvg(MGroup[10]))
 
-	Strs := foundation.Float32ArrayColor("red", AvgGroup...)
-	fmt.Printf("Day:%v Day3:%v Day7:%v Day14:%v Day30:%v\n Day60:%v Day90:%v\n Day120:%v Day180:%v Day240:%v Year1:%v\n", Strs...)
-	fmt.Println("------------------------------------------------------------------------")
-	// fmt.Println(MGroup)
+	// Strs := foundation.Float32ArrayColor("red", AvgGroup...)
+	// fmt.Printf("Day:%v Day3:%v Day7:%v Day14:%v Day30:%v\n Day60:%v Day90:%v\n Day120:%v Day180:%v Day240:%v Year1:%v\n", Strs...)
 	// fmt.Println("------------------------------------------------------------------------")
-	Strs = foundation.Float32ArrayColor("red", AvgMGroup...)
-	fmt.Printf("Day:%v Day3:%v Day7:%v Day14:%v Day30:%v\n Day60:%v Day90:%v\n Day120:%v Day180:%v Day240:%v Year1:%v\n", Strs...)
-	fmt.Println("#############################################################################################")
+	// // fmt.Println(MGroup)
+	// // fmt.Println("------------------------------------------------------------------------")
+	// Strs = foundation.Float32ArrayColor("red", AvgMGroup...)
+	// fmt.Printf("Day:%v Day3:%v Day7:%v Day14:%v Day30:%v\n Day60:%v Day90:%v\n Day120:%v Day180:%v Day240:%v Year1:%v\n", Strs...)
+	// fmt.Println("#############################################################################################")
 }
 
 // MathAvg ...

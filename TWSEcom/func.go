@@ -20,10 +20,12 @@ func Collection(StockCode string) {
 
 	var YearSlice []int
 	thisYear := time.Now().Year()
+	NextYear := thisYear
 	LastYear := thisYear - 11
-	for thisYear > LastYear {
-		YearSlice = append(YearSlice, thisYear)
-		thisYear = thisYear - YearSlipDupliy
+
+	for NextYear > LastYear {
+		YearSlice = append(YearSlice, NextYear)
+		NextYear = NextYear - YearSlipDupliy
 	}
 
 	collectionflag, err := stockday.GetAlreadyDate(StockCode)
@@ -104,7 +106,7 @@ func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag [
 			continue
 		}
 
-		date = fmt.Sprintf("%d01", year)
+		date = fmt.Sprintf("%d0101", year)
 
 		if IsInCollectionFlag(date[0:len(date)-2], "Month", collectionflag) {
 			fmt.Printf("Month %s IsSkip!\n", date[0:len(date)-2])
