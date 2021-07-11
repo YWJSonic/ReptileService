@@ -19,13 +19,13 @@ func CopyData(Num string) error {
 	}
 	Infos := result.GetInfos()
 	for _, info := range Infos {
-		err = handledb.Setstockyear(info.StockCode, info.Year, info.StockCount, info.StockPrice, info.DealCount, info.TopPrice, info.TopPriceDate, info.BottomPrice, info.BottomPriceDate, info.AVGPrice)
+		err = handledb.Instance.Setstockyear(info.StockCode, info.Year, info.StockCount, info.StockPrice, info.DealCount, info.TopPrice, info.TopPriceDate, info.BottomPrice, info.BottomPriceDate, info.AVGPrice)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = handledb.Setcollectionflag(Num, "Year", fmt.Sprint(time.Now().Year()))
+	err = handledb.Instance.Setcollectionflag(Num, "Year", fmt.Sprint(time.Now().Year()))
 	if err != nil {
 		return err
 	}
@@ -63,5 +63,5 @@ func ConvertToInfo(Data []interface{}) Info {
 
 // GetAlreadyDate ...
 func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
-	return handledb.Getcollectionflag(StockCode, "Year")
+	return handledb.Instance.Getcollectionflag(StockCode, "Year")
 }

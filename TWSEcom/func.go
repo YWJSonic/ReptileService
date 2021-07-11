@@ -11,6 +11,11 @@ import (
 	"github.com/YWJSonic/ReptileService/foundation"
 )
 
+// 網站限制
+// 1分鐘 內請求 25次 以下
+// 建議每 4~5秒 一次
+// 被鎖定後 1小時 才會解鎖
+
 // YearSlipDupliy 執行續分割年分
 var YearSlipDupliy = 5
 
@@ -28,6 +33,7 @@ func Collection(StockCode string) {
 		NextYear = NextYear - YearSlipDupliy
 	}
 
+	collectionflag := []map[string]interface{}{}
 	collectionflag, err := stockday.GetAlreadyDate(StockCode)
 	if err != nil {
 		fmt.Println(err)
@@ -36,15 +42,15 @@ func Collection(StockCode string) {
 
 	for index, count := 0, len(YearSlice); index < count; index++ {
 		if index == count-1 {
-			go DayCollection(StockCode, YearSlice[index], LastYear, collectionflag, RunCount)
+			DayCollection(StockCode, YearSlice[index], LastYear, collectionflag, RunCount)
 		} else {
-			go DayCollection(StockCode, YearSlice[index], YearSlice[index+1], collectionflag, RunCount)
+			DayCollection(StockCode, YearSlice[index], YearSlice[index+1], collectionflag, RunCount)
 		}
 	}
 
-	go MonthCollection(StockCode, thisYear, LastYear, collectionflag, RunCount)
+	// go MonthCollection(StockCode, thisYear, LastYear, collectionflag, RunCount)
 
-	go YearCollection(StockCode, collectionflag, RunCount)
+	// go YearCollection(StockCode, collectionflag, RunCount)
 
 	for range YearSlice {
 		<-RunCount
@@ -80,7 +86,7 @@ func DayCollection(StockCode string, StartYear, EndYear int, collectionflag []ma
 				continue
 			}
 
-			err = stockday.CopyData(StockCode, date)
+			err = stockday.CopyData(StockCode, date, time.Now().Unix()*1000)
 			fmt.Printf("Collection %s daily day stock\n", date)
 			time.Sleep(time.Second * 1)
 

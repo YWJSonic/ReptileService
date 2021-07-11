@@ -37,7 +37,7 @@ func GetUpdateMsg(exch string) (*UpdateInfo, error) {
 
 // GetOldData date:"2006-01-02"
 func GetOldData(stockcode, date string) ([]MsgInfo, error) {
-	result, err := handledb.GetTransactiondetail(stockcode, date)
+	result, err := handledb.Instance.GetTransactiondetail(stockcode, date)
 	if err != nil {
 		return nil, err
 	}

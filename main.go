@@ -3,7 +3,6 @@ package main
 import (
 	twsecom "github.com/YWJSonic/ReptileService/TWSEcom"
 	"github.com/YWJSonic/ReptileService/handledb"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // URL https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=2409&_=1573430069096
@@ -22,21 +21,20 @@ import (
 func main() {
 	// stockCode := os.Args[1]
 
-	setting := struct{ DBUser, DBPassword, DBIP, DBPORT, DBName string }{
-		DBUser:     "sony79410",
-		DBPassword: "Sonic79410",
-		DBIP:       "127.0.0.1",
-		DBPORT:     "3306",
-		DBName:     "stock",
-	}
-	err := handledb.SetInit(&setting)
-	if err != nil {
-		panic(err)
-	}
+	// setting := struct{ DBUser, DBPassword, DBIP, DBPORT, DBName string }{
+	// 	DBUser:     "sony79410",
+	// 	DBPassword: "Sonic79410",
+	// 	DBIP:       "127.0.0.1",
+	// 	DBPORT:     "3306",
+	// 	DBName:     "stock",
+	// }
+	dbHandle := handledb.NewDBHandle()
+	dbHandle.ConnectLocalDB(struct{ Path string }{Path: "./"})
+	handledb.Instance = dbHandle
 
 	// stockcodes := []string{"2377", "2882", "2888", "3481", "4904", "8046", "2317", "3481", "2376", "2449"}
 	// for _, stockcode := range stockcodes {
-	twsecom.Collection("2409") //stockCode)
+	twsecom.Collection("2449") //stockCode)
 	// }
 
 	// analysis.GetAnalysisManager().CollectionPriceDetail(stockCode)
