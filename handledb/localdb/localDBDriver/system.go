@@ -57,8 +57,7 @@ func (self *Driver) Set(collection string, key string, data interface{}) (interf
 func (self *Driver) GetLike(collection, key string) (map[string]interface{}, error) {
 	var datas map[string]interface{}
 
-	path := fmt.Sprintf("%v%v/%v", self.path, collection)
-
+	path := fmt.Sprintf("%v%v", self.path, collection)
 	fileInfos, err := ioutil.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
