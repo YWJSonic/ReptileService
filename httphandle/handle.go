@@ -3,6 +3,7 @@ package httphandle
 import (
 	"crypto/tls"
 	"net/http"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -17,11 +18,14 @@ type IHttpHandle interface {
 }
 
 type HttpHandle struct {
-	client *http.Client
+	client             *http.Client
+	getRequestWaitTime time.Time
 }
 
 func NewHttpHandle() *HttpHandle {
-	HttpHandle := &HttpHandle{}
+	HttpHandle := &HttpHandle{
+		getRequestWaitTime: time.Time{},
+	}
 	httptr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 

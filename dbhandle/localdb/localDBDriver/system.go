@@ -5,10 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/YWJSonic/ReptileService/constants"
 )
 
 func (self *Driver) NewCollection(collection string) error {
@@ -24,12 +25,15 @@ func (self *Driver) NewCollection(collection string) error {
 	}
 
 	head := newFileHead()
-	self.setHead(collection, head)
+	err = self.setHead(collection, head)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (self *Driver) Set(collection string, key string, data interface{}) (interface{}, error) {
-	path := fmt.Sprintf("%v%v/%v", self.path, collection, key)
+	path := fmt.Sprintf("%v/%v/%v", self.path, collection, key)
 	result := &insertResult{}
 	byteData, err := json.Marshal(data)
 	if err != nil {
@@ -48,19 +52,22 @@ func (self *Driver) Set(collection string, key string, data interface{}) (interf
 		self.setHead(collection, head)
 	}
 
-	ioutil.WriteFile(path, byteData, 0666)
+	err = ioutil.WriteFile(path, byteData, 0666)
+	if err != nil {
+		return nil, err
+	}
 	result.Key = key
 
 	return result, nil
 }
 
 func (self *Driver) GetLike(collection, key string) (map[string]interface{}, error) {
-	var datas map[string]interface{}
+	datas := make(map[string]interface{})
 
-	path := fmt.Sprintf("%v%v", self.path, collection)
+	path := fmt.Sprintf("%v/%v", self.path, collection)
 	fileInfos, err := ioutil.ReadDir(path)
 	if err != nil {
-		log.Fatal(err)
+		return nil, errors.New(constants.NoData)
 	}
 
 	for _, fileInfo := range fileInfos {

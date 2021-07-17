@@ -35,10 +35,10 @@ func main() {
 
 	httphandle.Instans = httphandle.NewHttpHandle()
 
-	// stockcodes := []string{"2377", "2882", "2888", "3481", "4904", "8046", "2317", "3481", "2376", "2449"}
-	// for _, stockcode := range stockcodes {
-	twsecom.Collection("2449") //stockCode)
-	// }
+	stockcodes := []string{"2356", "2412", "2449", "2834", "6180", "5283", "2002", "2881", "2888", "6505"}
+	for _, stockcode := range stockcodes {
+		twsecom.Collection(stockcode) //stockCode)
+	}
 
 	// analysis.GetAnalysisManager().CollectionPriceDetail(stockCode)
 	// for {

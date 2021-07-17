@@ -21,8 +21,6 @@ var YearSlipDupliy = 5
 
 // Collection ...
 func Collection(StockCode string) {
-	RunCount := make(chan int)
-
 	var YearSlice []int
 	thisYear := time.Now().Year()
 	NextYear := thisYear
@@ -42,28 +40,19 @@ func Collection(StockCode string) {
 
 	for index, count := 0, len(YearSlice); index < count; index++ {
 		if index == count-1 {
-			DayCollection(StockCode, YearSlice[index], LastYear, collectionflag, RunCount)
+			DayCollection(StockCode, YearSlice[index], LastYear, collectionflag)
 		} else {
-			DayCollection(StockCode, YearSlice[index], YearSlice[index+1], collectionflag, RunCount)
+			DayCollection(StockCode, YearSlice[index], YearSlice[index+1], collectionflag)
 		}
 	}
 
-	// go MonthCollection(StockCode, thisYear, LastYear, collectionflag, RunCount)
+	MonthCollection(StockCode, thisYear, LastYear, collectionflag)
 
-	// go YearCollection(StockCode, collectionflag, RunCount)
-
-	for range YearSlice {
-		<-RunCount
-		fmt.Println("finish -------------111")
-	}
-	<-RunCount
-	fmt.Println("finish -------------222")
-	<-RunCount
-	fmt.Println("finish -------------333")
+	YearCollection(StockCode, collectionflag)
 }
 
 // DayCollection ...
-func DayCollection(StockCode string, StartYear, EndYear int, collectionflag []map[string]interface{}, chint chan int) {
+func DayCollection(StockCode string, StartYear, EndYear int, collectionflag []map[string]interface{}) {
 	// Stock Day Data
 	var date string
 	var month int
@@ -91,18 +80,18 @@ func DayCollection(StockCode string, StartYear, EndYear int, collectionflag []ma
 			time.Sleep(time.Second * 1)
 
 			if err != nil {
-				fmt.Println(date, err)
+				fmt.Println("YearCollection Error:", date, err)
+				return
 			}
 
 			month--
 		}
 	}
-	fmt.Printf("Stock %s %d ~ %d daily data finish!!!", StockCode, StartYear, EndYear)
-	chint <- 1
+	fmt.Printf("Stock %s %d ~ %d daily data finish!!!\n", StockCode, StartYear, EndYear)
 }
 
 // MonthCollection ...
-func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag []map[string]interface{}, chint chan int) {
+func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag []map[string]interface{}) {
 	// Stock Day Data
 	var date string
 	var err error
@@ -124,33 +113,30 @@ func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag [
 		time.Sleep(time.Second * 5)
 
 		if err != nil {
-			fmt.Println(date, err)
+			fmt.Println("MonthCollection Error:", date, err)
+			return
 		}
 	}
 	fmt.Println("Stock " + StockCode + " monthly data finish!!!")
-	chint <- 1
 }
 
 // YearCollection ...
-func YearCollection(StockCode string, collectionflag []map[string]interface{}, chint chan int) {
+func YearCollection(StockCode string, collectionflag []map[string]interface{}) {
 	// Stock Year Data
 	var err error
 
 	date := strconv.Itoa(time.Now().Year())
 	if IsInCollectionFlag(date, "Year", collectionflag) {
 		fmt.Printf("Year %s IsSkip!\n", date)
-		chint <- 1
 		return
 	}
 
 	err = fmnptk.CopyData(StockCode)
 	if err != nil {
-		fmt.Println(err)
-		chint <- 1
+		fmt.Println("YearCollection Error:", date, err)
 		return
 	}
 	fmt.Println("Stock " + StockCode + " yearly data finish!!!")
-	chint <- 1
 }
 
 // MonthDayCount ...

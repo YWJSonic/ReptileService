@@ -3,7 +3,6 @@ package httpDriver
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -32,7 +31,6 @@ func HTTPGetRequest(client *http.Client, url string, value []byte) []byte {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("HTTPPostRawRequest Resp", resp, " ---- ", err)
 		return nil
 	}
 	defer resp.Body.Close()
@@ -88,12 +86,9 @@ func PostData(r *http.Request) map[string]interface{} {
 func HTTPPostRawRequest(client *http.Client, url string, value []byte) ([]byte, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(value))
 	req.Header.Set("Content-Type", "application/json")
-	fmt.Println("HTTPPostRawRequest", req)
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("HTTPPostRawRequest Resp", resp)
-		fmt.Println("HTTPPostRawRequest Error", err)
 		resp.Body.Close()
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package httphandle
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/YWJSonic/ReptileService/httphandle/httpDriver"
 	"github.com/julienschmidt/httprouter"
@@ -14,6 +15,13 @@ func (self *HttpHandle) HTTPGet(ip string, values map[string][]string) []byte {
 
 // HTTPGetRequest Http Raw Request
 func (self *HttpHandle) HTTPGetRequest(url string, value []byte) []byte {
+	for {
+		if time.Now().After(self.getRequestWaitTime.Add(time.Second * 5)) {
+			self.getRequestWaitTime = time.Now()
+			break
+		}
+	}
+
 	return httpDriver.HTTPGetRequest(self.client, url, value)
 }
 
