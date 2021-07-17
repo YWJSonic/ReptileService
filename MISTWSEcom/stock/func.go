@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/YWJSonic/ReptileService/dbhandle"
 	"github.com/YWJSonic/ReptileService/foundation"
-	"github.com/YWJSonic/ReptileService/handledb"
-	"github.com/YWJSonic/ReptileService/handlehttp"
+	"github.com/YWJSonic/ReptileService/httphandle"
 )
 
 // URL https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=tse_2409.tw&json=1&delay=0&_=1573451359721
@@ -14,7 +14,7 @@ import (
 // GetName ...
 func GetName(Num string) (*NamesData, error) {
 	info := &NamesData{}
-	result := handlehttp.HTTPGetRequest(handlehttp.ConnectPool(), fmt.Sprintf("https://mis.twse.com.tw/stock/api/getStockNames.jsp?n=%s&_=%d", Num, time.Now().Unix()*1000), nil)
+	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://mis.twse.com.tw/stock/api/getStockNames.jsp?n=%s&_=%d", Num, time.Now().Unix()*1000), nil)
 	err := foundation.ByteToStruct(result, &info)
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func GetName(Num string) (*NamesData, error) {
 // GetUpdateMsg ...
 func GetUpdateMsg(exch string) (*UpdateInfo, error) {
 	info := &UpdateInfo{}
-	result := handlehttp.HTTPGetRequest(handlehttp.ConnectPool(), fmt.Sprintf("https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=%s&json=1&delay=0&_=%d", exch, time.Now().Unix()*1000), nil)
+	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://mis.twse.com.tw/stock/api/getStockInfo.jsp?ex_ch=%s&json=1&delay=0&_=%d", exch, time.Now().Unix()*1000), nil)
 	err := foundation.ByteToStruct(result, &info)
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func GetUpdateMsg(exch string) (*UpdateInfo, error) {
 
 // GetOldData date:"2006-01-02"
 func GetOldData(stockcode, date string) ([]MsgInfo, error) {
-	result, err := handledb.Instance.GetTransactiondetail(stockcode, date)
+	result, err := dbhandle.Instance.GetTransactiondetail(stockcode, date)
 	if err != nil {
 		return nil, err
 	}

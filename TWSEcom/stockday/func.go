@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/YWJSonic/ReptileService/dbhandle"
 	foundation "github.com/YWJSonic/ReptileService/foundation"
-	"github.com/YWJSonic/ReptileService/handledb"
-	handlehttp "github.com/YWJSonic/ReptileService/handlehttp"
+	"github.com/YWJSonic/ReptileService/httphandle"
 )
 
 // URL https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20190801&stockNo=2409&_=1573440324018
@@ -24,12 +24,12 @@ func CopyData(Num string, Date string, cacheTime int64) error {
 		return errors.New("empty info")
 	}
 	for _, info := range Infos {
-		err = handledb.Instance.Setstockday(info.StockCode, info.Year, info.Month, info.Day, info.StockPrice, info.StockCount, info.OpenPrice, info.ClosePrice, info.TopPrice, info.BottomPrice, info.DiffPrice, info.DealCount)
+		err = dbhandle.Instance.Setstockday(info.StockCode, info.Year, info.Month, info.Day, info.StockPrice, info.StockCount, info.OpenPrice, info.ClosePrice, info.TopPrice, info.BottomPrice, info.DiffPrice, info.DealCount)
 		if err != nil {
 			return err
 		}
 	}
-	err = handledb.Instance.Setcollectionflag(Num, "Day", Date[0:len(Date)-2])
+	err = dbhandle.Instance.Setcollectionflag(Num, "Day", Date[0:len(Date)-2])
 	if err != nil {
 		return err
 	}
@@ -44,7 +44,7 @@ func Get(Num string, Date string, cacheTime int64) (*Result, error) {
 	data := &Result{}
 	url := fmt.Sprintf("https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=%s&stockNo=%s&_=%d", Date, Num, cacheTime)
 	fmt.Println(url)
-	result := handlehttp.HTTPGetRequest(handlehttp.ConnectPool(), url, nil)
+	result := httphandle.Instans.HTTPGetRequest(url, nil)
 	err := foundation.ByteToStruct(result, &data)
 	if err != nil {
 		return nil, err
@@ -95,5 +95,5 @@ func ConvertToInfo(Data []interface{}) Info {
 
 // GetAlreadyDate ...
 func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
-	return handledb.Instance.Getcollectionflag(StockCode, "Day")
+	return dbhandle.Instance.Getcollectionflag(StockCode, "Day")
 }

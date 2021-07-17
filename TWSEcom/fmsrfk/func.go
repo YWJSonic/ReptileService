@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/YWJSonic/ReptileService/dbhandle"
 	foundation "github.com/YWJSonic/ReptileService/foundation"
-	"github.com/YWJSonic/ReptileService/handledb"
-	handlehttp "github.com/YWJSonic/ReptileService/handlehttp"
+	"github.com/YWJSonic/ReptileService/httphandle"
 )
 
 // CopyData ...
@@ -18,12 +18,12 @@ func CopyData(Num string, Date string) error {
 	}
 	Infos := result.GetInfos()
 	for _, info := range Infos {
-		err = handledb.Instance.Setstockmonth(info.StockCode, info.Year, info.Month, info.StockPrice, info.StockCount, info.DealCount, info.WeightsAvgPrice, info.TopPrice, info.BottomPrice, info.Turnover)
+		err = dbhandle.Instance.Setstockmonth(info.StockCode, info.Year, info.Month, info.StockPrice, info.StockCount, info.DealCount, info.WeightsAvgPrice, info.TopPrice, info.BottomPrice, info.Turnover)
 		if err != nil {
 			return err
 		}
 	}
-	err = handledb.Instance.Setcollectionflag(Num, "Month", Date[0:len(Date)-2])
+	err = dbhandle.Instance.Setcollectionflag(Num, "Month", Date[0:len(Date)-2])
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func CopyData(Num string, Date string) error {
 // Date: 查詢日期 20020101
 func Get(Num string, Date string) (*Result, error) {
 	data := &Result{}
-	result := handlehttp.HTTPGetRequest(handlehttp.ConnectPool(), fmt.Sprintf("https://www.twse.com.tw/exchangeReport/FMSRFK?response=json&date=%s&stockNo=%s&_=%d", Date, Num, time.Now().Unix()*1000), nil)
+	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://www.twse.com.tw/exchangeReport/FMSRFK?response=json&date=%s&stockNo=%s&_=%d", Date, Num, time.Now().Unix()*1000), nil)
 	err := foundation.ByteToStruct(result, &data)
 	if err != nil {
 		return nil, err
@@ -66,5 +66,5 @@ func ConvertToInfo(Data []interface{}) Info {
 
 // GetAlreadyDate ...
 func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
-	return handledb.Instance.Getcollectionflag(StockCode, "Month")
+	return dbhandle.Instance.Getcollectionflag(StockCode, "Month")
 }

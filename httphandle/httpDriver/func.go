@@ -1,33 +1,15 @@
-package handlehttp
+package httpDriver
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/YWJSonic/ServerUtility/httprouter"
 )
-
-// ConnectPool HttpClient http get http request connect pool
-func ConnectPool() *http.Client {
-	if clientConnect == nil {
-		clientConnect = new(httpClient)
-		httptr := &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-
-			MaxIdleConns:        50,
-			MaxIdleConnsPerHost: 50,
-		}
-		clientConnect.Client = &http.Client{
-			Transport: httptr,
-		}
-	}
-	return clientConnect.Client
-}
 
 // HTTPGet ...
 func HTTPGet(ip string, values map[string][]string) []byte {

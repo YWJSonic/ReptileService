@@ -5,7 +5,7 @@ import (
 	"time"
 
 	foundation "github.com/YWJSonic/ReptileService/foundation"
-	handlehttp "github.com/YWJSonic/ReptileService/handlehttp"
+	"github.com/YWJSonic/ReptileService/httphandle"
 )
 
 // SelectType ...
@@ -125,7 +125,7 @@ func GetBySelectTypeIndex(selectTypeIndex int, Date string) (*Info, error) {
 func GetBySelectType(selectType string, Date string) (*Info, error) {
 	info := &Info{}
 	ip := fmt.Sprintf("https://www.twse.com.tw/exchangeReport/MI_INDEX?response=json&date=%s&type=%s&_=%d", Date, SelectType[selectType], time.Now().Unix()*1000)
-	result := handlehttp.HTTPGetRequest(handlehttp.ConnectPool(), ip, nil)
+	result := httphandle.Instans.HTTPGetRequest(ip, nil)
 	// fmt.Println(string(result))
 	err := foundation.ByteToStruct(result, &info)
 	if err != nil {

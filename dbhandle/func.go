@@ -1,9 +1,9 @@
-package handledb
+package dbhandle
 
 import (
 	"errors"
 
-	"github.com/YWJSonic/ReptileService/handledb/localdb"
+	"github.com/YWJSonic/ReptileService/dbhandle/localdb"
 )
 
 // DB 整合工具

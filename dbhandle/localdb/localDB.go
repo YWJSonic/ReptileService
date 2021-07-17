@@ -3,7 +3,7 @@ package localdb
 import (
 	"fmt"
 
-	"github.com/YWJSonic/ReptileService/handledb/localdb/localDBDriver"
+	"github.com/YWJSonic/ReptileService/dbhandle/localdb/localDBDriver"
 )
 
 type LocalDB struct {
@@ -118,21 +118,36 @@ func (self *LocalDB) Setstockday(data ...interface{}) error {
 }
 
 // Getcollectionflag ...
-func (self *LocalDB) Getcollectionflag(StockCode, Flag string) ([]map[string]interface{}, error) {
-	// result, err := processdb.CallReadOutMap(stockBDSQL.DB, "Getcollectionflag", StockCode, Flag)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return result, nil
-	return nil, nil
+func (self *LocalDB) Getcollectionflag(stockCode, flag string) ([]map[string]interface{}, error) {
+	Key := fmt.Sprintf("%v_%v", stockCode, flag)
+	result, err := self.driver.GetLike("collectionflag", Key)
+	if err != nil {
+		return nil, err
+	}
+
+	convertData := []map[string]interface{}{}
+	for _, data := range result {
+		convertData = append(convertData, data.(map[string]interface{}))
+	}
+
+	return convertData, nil
 }
 
 // Setcollectionflag ...
-func (self *LocalDB) Setcollectionflag(StockCode, Flag, Date string) error {
-	// Result, err := processdb.CallWrite(stockBDSQL.DB, processdb.MakeProcedureQueryStr("Setcollectionflag", 3), StockCode, Flag, Date)
-	// if err != nil {
-	// 	fmt.Println(Result)
-	// 	return err
-	// }
+func (self *LocalDB) Setcollectionflag(stockCode, flag, date string) error {
+	type insertData struct {
+		StockCode, Flag, Date string
+	}
+
+	Key := fmt.Sprintf("%v_%v_%v", stockCode, flag, date)
+	importData := insertData{
+		StockCode: stockCode,
+		Flag:      flag,
+		Date:      date,
+	}
+	_, err := self.driver.Set("collectionflag", Key, importData)
+	if err != nil {
+		return err
+	}
 	return nil
 }

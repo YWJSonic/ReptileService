@@ -6,8 +6,8 @@ import (
 
 	"github.com/YWJSonic/ReptileService/MISTWSEcom/stock"
 	"github.com/YWJSonic/ReptileService/analysis/analysisday"
+	"github.com/YWJSonic/ReptileService/dbhandle"
 	"github.com/YWJSonic/ReptileService/foundation"
-	"github.com/YWJSonic/ReptileService/handledb"
 	"github.com/YWJSonic/ReptileService/routineswitch"
 )
 
@@ -93,7 +93,7 @@ func (M *Manager) CollectionPriceDetail(StockCode string) {
 				if !foundation.IsIncludeStr(key, keys) {
 					keys = append(keys, key)
 					info = result.MsgArray[0]
-					handledb.Instance.SetTransactiondetail(info.C, info.D, info.T, info.TS, info.TK0, info.TK1, info.TLong, info.CH, info.N, info.NF, info.Y, info.Z, info.IP, info.TV, info.A, info.F, info.B, info.G, info.EX, info.IT, info.MT, info.O, info.OA, info.OB, info.OT, info.OV, info.OZ, info.I, info.L, info.H, info.V, info.W, info.U, info.S, info.P, info.PS, info.PZ)
+					dbhandle.Instance.SetTransactiondetail(info.C, info.D, info.T, info.TS, info.TK0, info.TK1, info.TLong, info.CH, info.N, info.NF, info.Y, info.Z, info.IP, info.TV, info.A, info.F, info.B, info.G, info.EX, info.IT, info.MT, info.O, info.OA, info.OB, info.OT, info.OV, info.OZ, info.I, info.L, info.H, info.V, info.W, info.U, info.S, info.P, info.PS, info.PZ)
 				}
 				pricedeatil.SetPriceDeatil(&result.MsgArray[0])
 				time.Sleep(time.Second * 3)

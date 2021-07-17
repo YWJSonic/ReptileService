@@ -1,4 +1,4 @@
-package handledb
+package dbhandle
 
 type IDBHandle interface {
 	GetTransactiondetail(StockCode string, date string) ([]map[string]interface{}, error)

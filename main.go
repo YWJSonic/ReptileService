@@ -2,7 +2,8 @@ package main
 
 import (
 	twsecom "github.com/YWJSonic/ReptileService/TWSEcom"
-	"github.com/YWJSonic/ReptileService/handledb"
+	"github.com/YWJSonic/ReptileService/dbhandle"
+	"github.com/YWJSonic/ReptileService/httphandle"
 )
 
 // URL https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=2409&_=1573430069096
@@ -28,9 +29,11 @@ func main() {
 	// 	DBPORT:     "3306",
 	// 	DBName:     "stock",
 	// }
-	dbHandle := handledb.NewDBHandle()
-	dbHandle.ConnectLocalDB(struct{ Path string }{Path: "./"})
-	handledb.Instance = dbHandle
+	dbHandle := dbhandle.NewDBHandle()
+	dbHandle.ConnectLocalDB(struct{ Path string }{Path: "./DB"})
+	dbhandle.Instance = dbHandle
+
+	httphandle.Instans = httphandle.NewHttpHandle()
 
 	// stockcodes := []string{"2377", "2882", "2888", "3481", "4904", "8046", "2317", "3481", "2376", "2449"}
 	// for _, stockcode := range stockcodes {
