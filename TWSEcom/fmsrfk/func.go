@@ -3,16 +3,20 @@ package fmsrfk
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/YWJSonic/ReptileService/dbhandle"
 	foundation "github.com/YWJSonic/ReptileService/foundation"
 	"github.com/YWJSonic/ReptileService/httphandle"
 )
 
+// GetAlreadyDate ...
+func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
+	return dbhandle.Instance.Getcollectionflag(StockCode, "Month")
+}
+
 // CopyData ...
-func CopyData(Num string, Date string) error {
-	result, err := Get(Num, Date)
+func CopyData(stockCode string, date string, cacheTime int64) error {
+	result, err := Get(stockCode, date, cacheTime)
 	if err != nil {
 		return err
 	}
@@ -23,7 +27,7 @@ func CopyData(Num string, Date string) error {
 			return err
 		}
 	}
-	err = dbhandle.Instance.Setcollectionflag(Num, "Month", Date[0:len(Date)-2])
+	err = dbhandle.Instance.Setcollectionflag(stockCode, "Month", date[0:len(date)-2])
 	if err != nil {
 		return err
 	}
@@ -33,14 +37,14 @@ func CopyData(Num string, Date string) error {
 // Get data
 // Num: 股票代號
 // Date: 查詢日期 20020101
-func Get(Num string, Date string) (*Result, error) {
+func Get(stockCode string, date string, cacheTime int64) (*Result, error) {
 	data := &Result{}
-	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://www.twse.com.tw/exchangeReport/FMSRFK?response=json&date=%s&stockNo=%s&_=%d", Date, Num, time.Now().Unix()*1000), nil)
+	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://www.twse.com.tw/exchangeReport/FMSRFK?response=json&date=%s&stockNo=%s&_=%d", date, stockCode, cacheTime), nil)
 	err := foundation.ByteToStruct(result, &data)
 	if err != nil {
 		return nil, err
 	}
-	data.StockCode = Num
+	data.StockCode = stockCode
 	data.Original = string(result)
 	if data.Stat != "OK" {
 		return nil, errors.New(data.Stat)
@@ -62,9 +66,4 @@ func ConvertToInfo(Data []interface{}) Info {
 	info.StockCount = foundation.InterfaceToString(Data[7])
 	info.Turnover = foundation.InterfaceToString(Data[8])
 	return info
-}
-
-// GetAlreadyDate ...
-func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
-	return dbhandle.Instance.Getcollectionflag(StockCode, "Month")
 }

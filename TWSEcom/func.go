@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/YWJSonic/ReptileService/TWSEcom/bwibbu"
 	"github.com/YWJSonic/ReptileService/TWSEcom/fmnptk"
 	"github.com/YWJSonic/ReptileService/TWSEcom/fmsrfk"
 	"github.com/YWJSonic/ReptileService/TWSEcom/stockday"
@@ -21,80 +22,64 @@ var YearSlipDupliy = 5
 
 // Collection ...
 func Collection(StockCode string) {
-	var YearSlice []int
 	thisYear := time.Now().Year()
-	NextYear := thisYear
 	LastYear := thisYear - 11
 
-	for NextYear > LastYear {
-		YearSlice = append(YearSlice, NextYear)
-		NextYear = NextYear - YearSlipDupliy
-	}
+	BwibbuCollection(StockCode, thisYear, LastYear)
 
-	collectionflag := []map[string]interface{}{}
-	collectionflag, err := stockday.GetAlreadyDate(StockCode)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	DayCollection(StockCode, thisYear, LastYear)
 
-	for index, count := 0, len(YearSlice); index < count; index++ {
-		if index == count-1 {
-			DayCollection(StockCode, YearSlice[index], LastYear, collectionflag)
-		} else {
-			DayCollection(StockCode, YearSlice[index], YearSlice[index+1], collectionflag)
-		}
-	}
+	MonthCollection(StockCode, thisYear, LastYear)
 
-	MonthCollection(StockCode, thisYear, LastYear, collectionflag)
-
-	YearCollection(StockCode, collectionflag)
+	YearCollection(StockCode)
 }
 
 // DayCollection ...
-func DayCollection(StockCode string, StartYear, EndYear int, collectionflag []map[string]interface{}) {
+func DayCollection(StockCode string, StartYear, EndYear int) {
 	// Stock Day Data
-	var date string
 	var month int
 	var err error
-	//now := time.Now()
+	var collectionflag []map[string]interface{}
+	var cacheTime int64 = time.Now().Unix() * 1000
 
-	for year := StartYear; year > EndYear; year-- {
-		month = 12
-		for month > 0 {
-			if foundation.IsAfterNowTime(year, month, 1) {
-				month--
-				continue
-			}
+	if collectionflag, err = stockday.GetAlreadyDate(StockCode); err != nil {
+		fmt.Println("DayCollection Error:", err)
+		return
+	}
 
-			date = fmt.Sprintf("%d%02d01", year, month)
-
-			if IsInCollectionFlag(date[0:len(date)-2], "Day", collectionflag) { //} && !(now.Year() == year && now.Month() == time.Month(month)) {
-				fmt.Printf("Day %s IsSkip!\n", date[0:len(date)-2])
-				month--
-				continue
-			}
-
-			err = stockday.CopyData(StockCode, date, time.Now().Unix()*1000)
-			fmt.Printf("Collection %s daily day stock\n", date)
-			time.Sleep(time.Second * 1)
-
-			if err != nil {
-				fmt.Println("YearCollection Error:", date, err)
-				return
-			}
-
+	dates := MonthSlice(StartYear, EndYear, true)
+	for _, date := range dates {
+		if IsInCollectionFlag(date[0:len(date)-2], "Day", collectionflag) { //} && !(now.Year() == year && now.Month() == time.Month(month)) {
+			fmt.Printf("Day %s IsSkip!\n", date[0:len(date)-2])
 			month--
+			continue
 		}
+
+		err = stockday.CopyData(StockCode, date, cacheTime)
+		fmt.Printf("Collection %s daily day stock\n", date)
+		time.Sleep(time.Second * 1)
+
+		if err != nil {
+			fmt.Println("YearCollection Error:", date, err)
+			return
+		}
+
 	}
 	fmt.Printf("Stock %s %d ~ %d daily data finish!!!\n", StockCode, StartYear, EndYear)
 }
 
 // MonthCollection ...
-func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag []map[string]interface{}) {
+func MonthCollection(StockCode string, StartYear, LastYear int) {
 	// Stock Day Data
 	var date string
 	var err error
+	var cacheTime int64 = time.Now().Unix() * 1000
+	var collectionflag []map[string]interface{}
+
+	if collectionflag, err = fmsrfk.GetAlreadyDate(StockCode); err != nil {
+		fmt.Println("MonthCollection Error:", err)
+		return
+	}
 
 	for year := StartYear; year > LastYear; year-- {
 		if foundation.IsAfterNowTime(year, 1, 1) {
@@ -108,9 +93,8 @@ func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag [
 			continue
 		}
 
-		err = fmsrfk.CopyData(StockCode, date)
+		err = fmsrfk.CopyData(StockCode, date, cacheTime)
 		fmt.Printf("Collection %s daily Month stock\n", date)
-		time.Sleep(time.Second * 5)
 
 		if err != nil {
 			fmt.Println("MonthCollection Error:", date, err)
@@ -121,9 +105,16 @@ func MonthCollection(StockCode string, StartYear, LastYear int, collectionflag [
 }
 
 // YearCollection ...
-func YearCollection(StockCode string, collectionflag []map[string]interface{}) {
+func YearCollection(StockCode string) {
 	// Stock Year Data
 	var err error
+	var cacheTime int64 = time.Now().Unix() * 1000
+	var collectionflag []map[string]interface{}
+
+	if collectionflag, err = fmnptk.GetAlreadyDate(StockCode); err != nil {
+		fmt.Println("YearCollection Error:", err)
+		return
+	}
 
 	date := strconv.Itoa(time.Now().Year())
 	if IsInCollectionFlag(date, "Year", collectionflag) {
@@ -131,12 +122,38 @@ func YearCollection(StockCode string, collectionflag []map[string]interface{}) {
 		return
 	}
 
-	err = fmnptk.CopyData(StockCode)
+	err = fmnptk.CopyData(StockCode, cacheTime)
 	if err != nil {
-		fmt.Println("YearCollection Error:", date, err)
+		fmt.Println("Year CopyData Error:", date, err)
 		return
 	}
 	fmt.Println("Stock " + StockCode + " yearly data finish!!!")
+}
+
+func BwibbuCollection(StockCode string, StartYear, LastYear int) {
+	var err error
+	var cacheTime int64 = time.Now().Unix() * 1000
+	var collectionflag []map[string]interface{}
+
+	if collectionflag, err = bwibbu.GetAlreadyDate(StockCode); err != nil {
+		fmt.Println("BwibbuCollection Error:", err)
+		return
+	}
+
+	dates := MonthSlice(StartYear, LastYear, true)
+	for _, date := range dates {
+		if IsInCollectionFlag(date, "Bwibbu_Month", collectionflag) {
+			fmt.Printf("%v Bwibbu_Month %s IsSkip!\n", StockCode, date)
+			continue
+		}
+
+		err = bwibbu.CopyData(StockCode, date, cacheTime)
+		if err != nil {
+			fmt.Println("Bwibbu_Month CopyData Error:", date, err)
+			return
+		}
+	}
+	fmt.Println("Stock " + StockCode + " Bwibbu_Month data finish!!!")
 }
 
 // MonthDayCount ...
@@ -159,4 +176,35 @@ func IsInCollectionFlag(Date string, Flag string, CollectionFlags []map[string]i
 		}
 	}
 	return false
+}
+
+func MonthSlice(startYear, endYear int, isSkipAfterYear bool) []string {
+	var result []string
+	var month int = 12
+	if endYear > startYear {
+		return []string{}
+	}
+	for year := startYear; year > endYear; year-- {
+		for month = 12; month > 0; month-- {
+			if isSkipAfterYear && foundation.IsAfterNowTime(year, month, 1) {
+				continue
+			}
+			result = append(result, fmt.Sprintf("%d%02d01", year, month))
+		}
+	}
+	return result
+}
+
+func YearSlice(startYear, endYear int) []string {
+	var result []string
+	if endYear > startYear {
+		return []string{}
+	}
+	for year := startYear; year > endYear; year-- {
+		if foundation.IsAfterNowTime(year, 1, 1) {
+			continue
+		}
+		result = append(result, fmt.Sprintf("%d0101", year))
+	}
+	return result
 }

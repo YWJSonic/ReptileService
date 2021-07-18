@@ -35,26 +35,8 @@ func main() {
 
 	httphandle.Instans = httphandle.NewHttpHandle()
 
-	stockcodes := []string{"2356", "2412", "2449", "2834", "6180", "5283", "2002", "2881", "2888", "6505"}
+	stockcodes := []string{"2356", "2412", "2449", "2834", "5283", "2002", "2881", "2888", "6505"}
 	for _, stockcode := range stockcodes {
 		twsecom.Collection(stockcode) //stockCode)
 	}
-
-	// analysis.GetAnalysisManager().CollectionPriceDetail(stockCode)
-	// for {
-	// 	cmd := exec.Command("cmd", "/c", "cls")
-	// 	cmd.Stdout = os.Stdout
-	// 	cmd.Run()
-	// 	analysis.GetAnalysisManager().ShowPriceDetail(stockCode)
-	// 	time.Sleep(time.Second * 5)
-	// }
-
-	// analysis.GetAnalysisManager().StopCollectionPriceDetail("2409")
-
-	// value1, _ := strconv.ParseFloat(os.Args[1], 64)
-	// value2, _ := strconv.ParseFloat(os.Args[2], 64)
-
-	// fmt.Println(analysis.ProfitMath(value1, value2))
-	// fmt.Println("------------------All Finish---------------------------")
-	// time.Sleep(time.Hour)
 }

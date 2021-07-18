@@ -225,3 +225,31 @@ func (self *LocalDB) Setcollectionflag(stockCode, flag, date string) error {
 	}
 	return nil
 }
+
+func (self *LocalDB) SetBwibbu(data ...interface{}) error {
+	type insertData struct {
+		StockCode       string `json:"stockcode"`
+		Date            string `json:"date"`
+		YieldRate       string `json:"yieldrate"`
+		DividendYear    int    `json:"dividendyear"`
+		PeRatio         string `json:"peratio"`
+		WorthRatio      string `json:"worthratio"`
+		FinancialReport string `json:"financialreport"`
+	}
+
+	Key := FormatKey(data[0].(string), data[1].(string))
+	importData := insertData{
+		StockCode:       data[0].(string),
+		Date:            data[1].(string),
+		YieldRate:       data[2].(string),
+		DividendYear:    data[3].(int),
+		PeRatio:         data[4].(string),
+		WorthRatio:      data[5].(string),
+		FinancialReport: data[6].(string),
+	}
+	_, err := self.driver.Set("bwibbu", Key, importData)
+	if err != nil {
+		return err
+	}
+	return nil
+}

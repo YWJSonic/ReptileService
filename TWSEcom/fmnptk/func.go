@@ -12,8 +12,8 @@ import (
 // URL https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=2409&_=1573430069096
 
 // CopyData ...
-func CopyData(Num string) error {
-	result, err := Get(Num)
+func CopyData(stockCode string, cacheTime int64) error {
+	result, err := Get(stockCode, cacheTime)
 	if err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func CopyData(Num string) error {
 		}
 	}
 
-	err = dbhandle.Instance.Setcollectionflag(Num, "Year", fmt.Sprint(time.Now().Year()))
+	err = dbhandle.Instance.Setcollectionflag(stockCode, "Year", fmt.Sprint(time.Now().Year()))
 	if err != nil {
 		return err
 	}
@@ -34,14 +34,14 @@ func CopyData(Num string) error {
 
 // Get data
 // Num: 股票代號
-func Get(Num string) (*Result, error) {
+func Get(stockCode string, cacheTime int64) (*Result, error) {
 	data := &Result{}
-	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=%s&_=%d", Num, time.Now().Unix()*1000), nil)
+	result := httphandle.Instans.HTTPGetRequest(fmt.Sprintf("https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=%s&_=%d", stockCode, cacheTime), nil)
 	err := foundation.ByteToStruct(result, &data)
 	if err != nil {
 		return nil, err
 	}
-	data.StockCode = Num
+	data.StockCode = stockCode
 	data.Original = string(result)
 	return data, nil
 }
