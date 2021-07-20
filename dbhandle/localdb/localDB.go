@@ -253,3 +253,8 @@ func (self *LocalDB) SetBwibbu(data ...interface{}) error {
 	}
 	return nil
 }
+
+func (self *LocalDB) SetT86(data ...interface{}) error {
+
+	return nil
+}
