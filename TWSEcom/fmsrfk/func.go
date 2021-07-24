@@ -3,6 +3,7 @@ package fmsrfk
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/YWJSonic/ReptileService/dbhandle"
 	foundation "github.com/YWJSonic/ReptileService/foundation"
@@ -27,9 +28,13 @@ func CopyData(stockCode string, date string, cacheTime int64) error {
 			return err
 		}
 	}
-	err = dbhandle.Instance.Setcollectionflag(stockCode, "Month", date[0:len(date)-2])
-	if err != nil {
-		return err
+
+	// 同一年份需重新確認
+	if time.Now().Format("2006") != date[0:len(date)-2] {
+		err = dbhandle.Instance.Setcollectionflag(stockCode, "Month", date[0:len(date)-2])
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

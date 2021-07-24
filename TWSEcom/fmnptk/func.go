@@ -2,7 +2,6 @@ package fmnptk
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/YWJSonic/ReptileService/dbhandle"
 	foundation "github.com/YWJSonic/ReptileService/foundation"
@@ -25,10 +24,11 @@ func CopyData(stockCode string, cacheTime int64) error {
 		}
 	}
 
-	err = dbhandle.Instance.Setcollectionflag(stockCode, "Year", fmt.Sprint(time.Now().Year()))
-	if err != nil {
-		return err
-	}
+	// 每次都確認
+	// err = dbhandle.Instance.Setcollectionflag(stockCode, "Year", fmt.Sprint(time.Now().Year()))
+	// if err != nil {
+	// 	return err
+	// }
 	return nil
 }
 

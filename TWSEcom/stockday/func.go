@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/YWJSonic/ReptileService/dbhandle"
 	foundation "github.com/YWJSonic/ReptileService/foundation"
@@ -14,8 +15,8 @@ import (
 // URL https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20190801&stockNo=2409&_=1573440324018
 
 // CopyData ...
-func CopyData(Num string, Date string, cacheTime int64) error {
-	result, err := Get(Num, Date, cacheTime)
+func CopyData(stockCode string, date string, cacheTime int64) error {
+	result, err := Get(stockCode, date, cacheTime)
 	if err != nil {
 		return err
 	}
@@ -29,9 +30,13 @@ func CopyData(Num string, Date string, cacheTime int64) error {
 			return err
 		}
 	}
-	err = dbhandle.Instance.Setcollectionflag(Num, "Day", Date[0:len(Date)-2])
-	if err != nil {
-		return err
+
+	// 同一月份需重新確認
+	if time.Now().Format("200601") != date[0:len(date)-2] {
+		err = dbhandle.Instance.Setcollectionflag(stockCode, "Day", date[0:len(date)-2])
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
