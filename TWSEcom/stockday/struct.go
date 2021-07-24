@@ -2,6 +2,10 @@ package stockday
 
 // URL https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20190801&stockNo=2409&_=1573440324018
 
+const (
+	CollectionFlagkey = "Day"
+)
+
 // Result 個股日交資訊
 type Result struct {
 	Oringial  string

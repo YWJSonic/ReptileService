@@ -8,6 +8,7 @@ import (
 	"github.com/YWJSonic/ReptileService/TWSEcom/bwibbu"
 	"github.com/YWJSonic/ReptileService/TWSEcom/fmnptk"
 	"github.com/YWJSonic/ReptileService/TWSEcom/fmsrfk"
+	"github.com/YWJSonic/ReptileService/TWSEcom/legalperson"
 	"github.com/YWJSonic/ReptileService/TWSEcom/stockday"
 	"github.com/YWJSonic/ReptileService/foundation"
 )
@@ -49,7 +50,7 @@ func DayCollection(StockCode string, StartYear, EndYear int) {
 
 	dates := MonthSlice(StartYear, EndYear, true)
 	for _, date := range dates {
-		if IsInCollectionFlag(date[0:len(date)-2], "Day", collectionflag) { //} && !(now.Year() == year && now.Month() == time.Month(month)) {
+		if IsInCollectionFlag(date[0:len(date)-2], stockday.CollectionFlagkey, collectionflag) { //} && !(now.Year() == year && now.Month() == time.Month(month)) {
 			fmt.Printf("Day %s IsSkip!\n", date[0:len(date)-2])
 			month--
 			continue
@@ -88,7 +89,7 @@ func MonthCollection(StockCode string, StartYear, LastYear int) {
 
 		date = fmt.Sprintf("%d0101", year)
 
-		if IsInCollectionFlag(date[0:len(date)-2], "Month", collectionflag) {
+		if IsInCollectionFlag(date[0:len(date)-2], fmsrfk.CollectionFlagkey, collectionflag) {
 			fmt.Printf("Month %s IsSkip!\n", date[0:len(date)-2])
 			continue
 		}
@@ -117,7 +118,7 @@ func YearCollection(StockCode string) {
 	}
 
 	date := strconv.Itoa(time.Now().Year())
-	if IsInCollectionFlag(date, "Year", collectionflag) {
+	if IsInCollectionFlag(date, fmnptk.CollectionFlagkey, collectionflag) {
 		fmt.Printf("Year %s IsSkip!\n", date)
 		return
 	}
@@ -142,7 +143,7 @@ func BwibbuCollection(StockCode string, StartYear, LastYear int) {
 
 	dates := MonthSlice(StartYear, LastYear, true)
 	for _, date := range dates {
-		if IsInCollectionFlag(date, "Bwibbu_Month", collectionflag) {
+		if IsInCollectionFlag(date, bwibbu.CollectionFlagkey, collectionflag) {
 			fmt.Printf("%v Bwibbu_Month %s IsSkip!\n", StockCode, date)
 			continue
 		}
@@ -154,6 +155,32 @@ func BwibbuCollection(StockCode string, StartYear, LastYear int) {
 		}
 	}
 	fmt.Println("Stock " + StockCode + " Bwibbu_Month data finish!!!")
+}
+
+func LegalPersonCollection(StartYear, LastYear int) {
+	var err error
+	var cacheTime int64 = time.Now().Unix() * 1000
+	var collectionflag []map[string]interface{}
+
+	if collectionflag, err = legalperson.GetAlreadyDate(); err != nil {
+		fmt.Println("LegalPersonCollection Error:", err)
+		return
+	}
+
+	dates := DaySlice(StartYear, LastYear, true)
+	for _, date := range dates {
+		if IsInCollectionFlag(date, legalperson.CollectionFlagkey, collectionflag) {
+			fmt.Printf("LegalPerson %v IsSkip!\n", date)
+			continue
+		}
+
+		err = legalperson.CopyData(date, cacheTime)
+		if err != nil {
+			fmt.Println("LegalPerson CopyData Error:", date, err)
+			return
+		}
+		fmt.Println("Stock " + date + " LegalPerson data finish!!!")
+	}
 }
 
 // MonthDayCount ...
@@ -178,7 +205,30 @@ func IsInCollectionFlag(Date string, Flag string, CollectionFlags []map[string]i
 	return false
 }
 
-func MonthSlice(startYear, endYear int, isSkipAfterYear bool) []string {
+func DaySlice(startYear, endYear int, isSkipAfterDay bool) []string {
+	var result []string
+	if endYear > startYear {
+		return []string{}
+	}
+	currentTime := time.Date(startYear+1, 1, 1, 0, 0, 0, 0, time.UTC)
+	for isNext := true; isNext; {
+		currentTime = currentTime.AddDate(0, 0, -1)
+		year, month, day := currentTime.Date()
+		if isSkipAfterDay && currentTime.After(time.Now()) {
+			continue
+		}
+		if year < endYear {
+			isNext = false
+			continue
+		}
+
+		result = append(result, fmt.Sprintf("%d%02d%02d", year, month, day))
+
+	}
+	return result
+}
+
+func MonthSlice(startYear, endYear int, isSkipAfterDay bool) []string {
 	var result []string
 	var month int = 12
 	if endYear > startYear {
@@ -186,7 +236,7 @@ func MonthSlice(startYear, endYear int, isSkipAfterYear bool) []string {
 	}
 	for year := startYear; year > endYear; year-- {
 		for month = 12; month > 0; month-- {
-			if isSkipAfterYear && foundation.IsAfterNowTime(year, month, 1) {
+			if isSkipAfterDay && foundation.IsAfterNowTime(year, month, 1) {
 				continue
 			}
 			result = append(result, fmt.Sprintf("%d%02d01", year, month))

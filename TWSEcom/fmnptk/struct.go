@@ -2,6 +2,10 @@ package fmnptk
 
 // URL https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&stockNo=2409&_=1573430069096
 
+const (
+	CollectionFlagkey = "Year"
+)
+
 // Result 回傳資料
 type Result struct {
 	Original  string

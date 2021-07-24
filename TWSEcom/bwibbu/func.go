@@ -13,7 +13,7 @@ import (
 
 // GetAlreadyDate ...
 func GetAlreadyDate(StockCode string) ([]map[string]interface{}, error) {
-	return dbhandle.Instance.Getcollectionflag(StockCode, collectionFlagkey)
+	return dbhandle.Instance.Getcollectionflag(StockCode, CollectionFlagkey)
 }
 
 // CopyData ...
@@ -32,7 +32,7 @@ func CopyData(stockCode, date string, cacheTime int64) error {
 
 	}
 
-	err = dbhandle.Instance.Setcollectionflag(stockCode, collectionFlagkey, date)
+	err = dbhandle.Instance.Setcollectionflag(stockCode, CollectionFlagkey, date)
 	if err != nil {
 		return err
 	}
@@ -51,4 +51,27 @@ func Get(stockCode, date string, cacheTime int64) (*Result, error) {
 	data.StockCode = stockCode
 	data.Original = string(result)
 	return data, nil
+}
+
+// ConvertToInfo ...
+func ConvertToInfo(Data []interface{}) Info {
+	var info Info
+	if len(Data) > 4 {
+		info.Date = foundation.InterfaceToString(Data[0])
+		info.YieldRate = foundation.InterfaceToString(Data[1])
+		if Data[2] != "" {
+			info.DividendYear = foundation.InterfaceToInt(Data[2])
+		} else {
+			info.DividendYear = 0
+		}
+		info.PeRatio = foundation.InterfaceToString(Data[3])
+		info.WorthRatio = foundation.InterfaceToString(Data[4])
+		info.FinancialReport = foundation.InterfaceToString(Data[5])
+	} else {
+		info.Date = foundation.InterfaceToString(Data[0])
+		info.PeRatio = foundation.InterfaceToString(Data[1])
+		info.YieldRate = foundation.InterfaceToString(Data[2])
+		info.WorthRatio = foundation.InterfaceToString(Data[3])
+	}
+	return info
 }

@@ -35,8 +35,9 @@ func main() {
 
 	httphandle.Instans = httphandle.NewHttpHandle()
 
-	stockcodes := []string{"2356", "2412", "2449", "2834", "5283", "2002", "2881", "2888", "6505"}
-	for _, stockcode := range stockcodes {
-		twsecom.Collection(stockcode) //stockCode)
-	}
+	// stockcodes := []string{"2356", "2412", "2449", "2834", "5283", "2002", "2881", "2888", "6505"}
+	// for _, stockcode := range stockcodes {
+	// 	twsecom.Collection(stockcode) //stockCode)
+	// }
+	twsecom.LegalPersonCollection(2021, 2010)
 }

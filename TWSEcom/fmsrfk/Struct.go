@@ -2,6 +2,10 @@ package fmsrfk
 
 // URL https://www.twse.com.tw/exchangeReport/FMSRFK?response=json&date=20020101&stockNo=2409&_=1573433055138
 
+const (
+	CollectionFlagkey = "Month"
+)
+
 // Result 回傳資料
 type Result struct {
 	Original  string

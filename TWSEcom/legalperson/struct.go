@@ -1,7 +1,7 @@
-package t86
+package legalperson
 
 const (
-	collectionFlagkey string = "t86"
+	CollectionFlagkey string = "legalperson"
 )
 
 // Result ...
@@ -21,31 +21,15 @@ func (R *Result) GetInfos() []Info {
 
 	for _, data := range R.Data {
 		info := ConvertToInfo(data)
+		info.Date = R.Date
 		infos = append(infos, info)
 	}
 	return infos
 }
 
-// ConvertToInfo ...
-func ConvertToInfo(Data []interface{}) Info {
-	var info Info
-	info.StockCode = Data[0].(string)
-	info.StockName = Data[1].(string)
-	info.OutCountryBuy = Data[2].(string)
-	info.OutCountrySell = Data[3].(string)
-	info.OutCountryDiff = Data[4].(string)
-	info.BankEtfBuy = Data[5].(string)
-	info.BankEtfSell = Data[6].(string)
-	info.BankEtfDiff = Data[7].(string)
-	info.BankStockBuy = Data[8].(string)
-	info.BankStockSell = Data[9].(string)
-	info.BankStockDiff = Data[10].(string)
-	info.TotalDiff = Data[11].(string)
-	return info
-}
-
 // Info 2017 3月以後的結構(不含3月)
 type Info struct {
+	Date           string // 日期
 	StockCode      string // 證卷代號
 	StockName      string // 證卷名稱
 	OutCountryBuy  string // "外資買進股數"
