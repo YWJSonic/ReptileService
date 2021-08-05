@@ -24,11 +24,6 @@ func CopyData(stockCode string, cacheTime int64) error {
 		}
 	}
 
-	// 每次都確認
-	// err = dbhandle.Instance.Setcollectionflag(stockCode, "Year", fmt.Sprint(time.Now().Year()))
-	// if err != nil {
-	// 	return err
-	// }
 	return nil
 }
 

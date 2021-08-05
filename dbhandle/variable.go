@@ -16,7 +16,7 @@ type IDBHandle interface {
 	SetBwibbu(data ...interface{}) error
 
 	// 三大法人買賣金額統計表
-	SetLegalperson(data ...interface{}) error
+	SetLegalperson(flag, date string, data interface{}) error
 
 	// 已取得資料紀錄
 	Getcollectionflag(StockCode, Flag string) ([]map[string]interface{}, error)

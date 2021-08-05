@@ -27,7 +27,7 @@ func InterfaceToInt(v interface{}) int {
 	case int64:
 		return int(v.(int64))
 	default:
-		panic("Conver Error")
+		panic(fmt.Sprintf("Conver Error: %v, %v", v, reflect.TypeOf(v)))
 	}
 }
 
@@ -41,8 +41,7 @@ func InterfaceToInt64(v interface{}) int64 {
 	case int64:
 		return v.(int64)
 	default:
-		fmt.Print("Conver", v)
-		panic("Conver Error")
+		panic(fmt.Sprintf("Conver Error: %v, %v", v, reflect.TypeOf(v)))
 	}
 }
 
@@ -54,7 +53,7 @@ func InterfaceToBool(v interface{}) bool {
 	case bool:
 		return v.(bool)
 	default:
-		panic("Conver Error")
+		panic(fmt.Sprintf("Conver Error: %v, %v", v, reflect.TypeOf(v)))
 	}
 }
 
@@ -63,7 +62,16 @@ func InterfaceToString(v interface{}) string {
 	if v == nil {
 		return ""
 	} else {
-		return v.(string)
+		switch v.(type) {
+		case string:
+			return v.(string)
+		case float64:
+			return fmt.Sprint(v.(float64))
+		case int64:
+			return fmt.Sprint(v.(int64))
+		default:
+			panic(fmt.Sprintf("Conver Error: %v, %v", v, reflect.TypeOf(v)))
+		}
 	}
 }
 

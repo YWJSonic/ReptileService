@@ -254,40 +254,10 @@ func (self *LocalDB) SetBwibbu(data ...interface{}) error {
 	return nil
 }
 
-func (self *LocalDB) SetLegalperson(data ...interface{}) error {
-	type insertData struct {
-		Date           string `json:"data"`
-		StockCode      string `json:"stockCode"`
-		StockName      string `json:"stockName"`
-		OutCountryBuy  string `json:"outCountryBuy"`
-		OutCountrySell string `json:"outCountrySell"`
-		OutCountryDiff string `json:"outCountryDiff"`
-		BankEtfBuy     string `json:"bankEtfBuy"`
-		BankEtfSell    string `json:"bankEtfSell"`
-		BankEtfDiff    string `json:"bankEtfDiff"`
-		BankStockBuy   string `json:"bankStockBuy"`
-		BankStockSell  string `json:"bankStockSell"`
-		BankStockDiff  string `json:"bankStockDiff"`
-		TotalDiff      string `json:"totalDiff"`
-	}
+func (self *LocalDB) SetLegalperson(flag, date string, data interface{}) error {
 
-	Key := FormatKey(data[1].(string), data[0].(string))
-	importData := insertData{
-		Date:           data[0].(string),
-		StockCode:      data[1].(string),
-		StockName:      data[2].(string),
-		OutCountryBuy:  data[3].(string),
-		OutCountrySell: data[4].(string),
-		OutCountryDiff: data[5].(string),
-		BankEtfBuy:     data[6].(string),
-		BankEtfSell:    data[7].(string),
-		BankEtfDiff:    data[8].(string),
-		BankStockBuy:   data[9].(string),
-		BankStockSell:  data[10].(string),
-		BankStockDiff:  data[11].(string),
-		TotalDiff:      data[12].(string),
-	}
-	_, err := self.driver.Set("legalperson", Key, importData)
+	Key := FormatKey(flag, date)
+	_, err := self.driver.Set("legalperson", Key, data)
 	if err != nil {
 		return err
 	}

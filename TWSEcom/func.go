@@ -157,12 +157,12 @@ func BwibbuCollection(StockCode string, StartYear, LastYear int) {
 	fmt.Println("Stock " + StockCode + " Bwibbu_Month data finish!!!")
 }
 
-func LegalPersonCollection(StartYear, LastYear int) {
+func LegalPersonDayCollection(StartYear, LastYear int) {
 	var err error
 	var cacheTime int64 = time.Now().Unix() * 1000
 	var collectionflag []map[string]interface{}
 
-	if collectionflag, err = legalperson.GetAlreadyDate(); err != nil {
+	if collectionflag, err = legalperson.GetAlreadyDate(""); err != nil {
 		fmt.Println("LegalPersonCollection Error:", err)
 		return
 	}
@@ -174,12 +174,38 @@ func LegalPersonCollection(StartYear, LastYear int) {
 			continue
 		}
 
-		err = legalperson.CopyData(date, cacheTime)
+		err = legalperson.CopyDayData("", date, cacheTime)
 		if err != nil {
 			fmt.Println("LegalPerson CopyData Error:", date, err)
 			return
 		}
 		fmt.Println("Stock " + date + " LegalPerson data finish!!!")
+	}
+}
+
+func LegalPersonMonthCollection(StartYear, LastYear int) {
+	var err error
+	var cacheTime int64 = time.Now().Unix() * 1000
+	var collectionflag []map[string]interface{}
+
+	if collectionflag, err = legalperson.GetAlreadyDate("Month"); err != nil {
+		fmt.Println("LegalPersonCollection Month Error:", err)
+		return
+	}
+
+	dates := MonthSlice(StartYear, LastYear, true)
+	for _, date := range dates {
+		if IsInCollectionFlag(date, legalperson.CollectionFlagkey+"Month", collectionflag) {
+			fmt.Printf("LegalPerson Month %v IsSkip!\n", date)
+			continue
+		}
+
+		err = legalperson.CopyMonthData(date, cacheTime)
+		if err != nil {
+			fmt.Println("LegalPerson CopyData Month Error:", date, err)
+			return
+		}
+		fmt.Println("Stock " + date + " LegalPerson Month data finish!!!")
 	}
 }
 
